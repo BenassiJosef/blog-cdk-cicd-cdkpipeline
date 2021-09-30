@@ -19,7 +19,7 @@ export class CicdInfraStack extends cdk.Stack {
     const pipeline = new pipelines.CdkPipeline(this, 'CdkPipeline', {
       pipelineName: 'cdk-cdkpipeline',
       cloudAssemblyArtifact: cdkOutputArtifact,
-
+      
       sourceAction: new codepipeline_actions.GitHubSourceAction({
         actionName: 'DownloadSources',
 
@@ -68,7 +68,7 @@ export class CicdInfraStack extends cdk.Stack {
         region: 'eu-west-1',
       }
     }))
-    pipeline.addApplicationStage(new AppDeploymentStage(this, 'Stage-App-Deploy',{
+    pipeline.addApplicationStage(new AppDeploymentStage(this, 'Prod-App-Deploy',{
       env: {
         account: '414477822279',
         region: 'eu-west-1',
