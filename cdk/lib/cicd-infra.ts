@@ -6,7 +6,7 @@ import * as ecr from '@aws-cdk/aws-ecr'
 import * as iam from '@aws-cdk/aws-iam';
 import * as pipelines from '@aws-cdk/pipelines';
 
-import { LocalDeploymentStage } from './local-deployment';
+import { AppDeploymentStage } from './app-deployment';
 
 // NOTE: Create the pipeline and CI/CD infra such as ECR/S3
 export class CicdInfraStack extends cdk.Stack {
@@ -24,11 +24,9 @@ export class CicdInfraStack extends cdk.Stack {
         actionName: 'DownloadSources',
 
         // NOTE: Specify your source repository here.
-        owner: 'binxio',
+        owner: 'BenassiJosef',
         repo: 'blog-cdk-cicd-cdkpipeline',
-        oauthToken: cdk.SecretValue.secretsManager('/github.com/binxio', {
-          jsonField: 'token'
-        }),
+        oauthToken: cdk.SecretValue.secretsManager('github-token'),
         output: sourceArtifact,
       }),
 
@@ -64,8 +62,18 @@ export class CicdInfraStack extends cdk.Stack {
     }));
 
     // Deploy - Local
-    const localStage = new LocalDeploymentStage(this, 'AppDeployLocal');
-    pipeline.addApplicationStage(localStage);
+    pipeline.addApplicationStage(new AppDeploymentStage(this, 'Stage-App-Deploy',{ 
+      env: {
+        account: '069793231881',
+        region: 'eu-west-1',
+      }
+    }))
+    pipeline.addApplicationStage(new AppDeploymentStage(this, 'Stage-App-Deploy',{
+      env: {
+        account: '414477822279',
+        region: 'eu-west-1',
+      }
+    }))
   }
 
   getDockerBuildSpec(repositoryUri: string): codebuild.BuildSpec {
